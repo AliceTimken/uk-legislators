@@ -28,11 +28,7 @@ Data Format Documentation
 
 `canadian_mp_twitterhandles.csv` contains general information on Canadian Members of Parliament in the 44th House of Commons (elected in 2021).
 
-`R Markdown file` is an R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package] (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0)  as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.
-
-`legislators-current.yaml` and `legislators-historical.yaml` contain biographical information on all Members of Congress that have ever served in Congress, that is, since 1789, as well as cross-walks into other databases.
-
-Each legislator record is grouped into four guaranteed parts: id's which relate the record to other databases, name information (first, last, etc.), biographical information (birthday, gender), and terms served in Congress. A typical record looks something like this:
+`R Markdown file` is an R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.
 
 
 ### Data Dictionary (CSV)
@@ -40,22 +36,22 @@ Each legislator record is grouped into four guaranteed parts: id's which relate 
 The following fields are available in `canadian_mp_twitterhandles.csv`:
 
 
-* name:
-* screen_name:
-* constituency:
-* prov_territory:
-* political_affiliation:
-* start_date:
-* first_name:
-* last_name:
-* house:
-* title:
+* name: full name (first and last) of the legislator
+* screen_name: Twitter handle of the legislator
+* constituency: Constituency represented by the legislator in parliament
+* prov_territory: Province or territory of the legislator's constituency
+* political_affiliation: Political party affiliation of the legislator 
+* start_date: Start date of the legislator’s term in the 44th House of Commons (September 20, 2021)
+* first_name: First name of the legislator
+* last_name: Last name (surname) of the legislator
+* house: House of parliament to which the legislator belongs (e.g. House of Commons or Senate)
+* title: Honorary title of the legislator, if applicable
 
 
 
-### Data Dictionary (Twitter Users)
+### Data Dictionary (Twitter User Data)
 
-The following fields are made available when collecting social media data using the [rtweet package] (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
+The following fields are made available when collecting social media data using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
 
 * user_id                           
 * name                   
@@ -99,75 +95,19 @@ The following fields are made available when collecting social media data using 
 * translator_type
 
 
+Data Sources
+-------------------------
+<!-- Comment: describe data sources -->
 
+### Members of Parliament
 
+A list of current members of the Canadian House of Commons can be found [here](https://www.ourcommons.ca/members/en/search) and downloaded as CSV or XML.
 
-* id
-	* bioguide: The alphanumeric ID for this legislator in http://bioguide.congress.gov. Note that at one time some legislators (women who had changed their name when they got married) had two entries on the bioguide website. Only one bioguide ID is included here. **This is the best field to use as a primary key.**
-	* thomas: The numeric ID for this legislator on http://thomas.gov and http://beta.congress.gov. The ID is stored as a string with leading zeros preserved.
-	* lis: The alphanumeric ID for this legislator found in Senate roll call votes (http://www.senate.gov/pagelayout/legislative/a_three_sections_with_teasers/votes.htm).
-	* fec: A *list* of IDs for this legislator in Federal Election Commission data. In the CSV format, the `fec_ids` column is comma-separated.
-	* govtrack: The numeric ID for this legislator on GovTrack.us (stored as an integer).
-	* opensecrets: The alphanumeric ID for this legislator on OpenSecrets.org.
-	* votesmart: The numeric ID for this legislator on VoteSmart.org (stored as an integer).
-	* icpsr: The numeric ID for this legislator in Keith Poole's VoteView.com website, originally based on an ID system by the Interuniversity Consortium for Political and Social Research (stored as an integer).
-	* cspan: The numeric ID for this legislator on C-SPAN's video website, e.g. http://www.c-spanvideo.org/person/1745 (stored as an integer).
-	* wikipedia: The Wikipedia page name for the person (spaces are given as spaces, not underscores).
-	* ballotpedia: The ballotpedia.org page name for the person (spaces are given as spaces, not underscores).
-	* maplight : The numeric ID for this legislator on maplight.org (stored as an integer).
-	* house_history: The numeric ID for this legislator on http://history.house.gov/People/Search/. The ID is present only for members who have served in the U.S. House.
-	* bioguide_previous: When bioguide.congress.gov mistakenly listed a legislator under multiple IDs, this field is a *list* of alternative IDs. (This often ocurred for women who changed their name.) The IDs in this list probably were removed from bioguide.congress.gov but might still be in use in the wild.
+### Members of Parliament
 
-* name
-	* first: The legislator's _recognizable_ first name. Many people go by a different name than their legal first name, often their legal middle name, and our approach is to ensure that our first + last name fields combine to a recognizable name of the legislator. Normally we'll follow the name as it appears on House.gov or Senate.gov (and bioguide.congress.gov), which follows the legislator's own preference for how they want to be named in official places. However, in some cases the legislator goes by a first name that is merely a common short or informal form of their legal first name (e.g. Chris vs Christopher), and while they may prefer the informal name, we may use their longer legal first name because they would be recognizable by their legal name. If they sign official documents (e.g. letters to agencies, FEC filings) using their longer legal first name, we would use their legal first name and put their preferred shorter name in the `nickname` field. When legislators go by a first initial and middle name, we set the `first` name field to the initial (one character plus a period).
-	* middle: The legislator's middle name or middle initial (with period). It is not recommended to display this field, unless the `first` name field is an initial (one character plus a period).
-	* last: The legislator's last name. Some names include non-ASCII characters. When building search systems, it is advised to index both the raw value as well as a value with extended characters replaced with their ASCII equivalents (in Python that's: u"".join(c for c in unicodedata.normalize('NFKD', lastname) if not unicodedata.combining(c))).
-	* suffix: A suffix on the legislator's name, such as "Jr." or "III", but only if they use it in official contexts, such as if it appears on House.gov or Senate.gov.
-	* nickname: The legislator's nick name when used as a common alternative to their first name. Usually displayed within quotes after the first name. If they are generally only known by a nickname, we would likely place the name in the `first` name field instead (see above).
-	* official_full: The full name of the legislator according to the House or Senate (usually first, middle initial, nickname, last, and suffix). Present for those serving on 2012-10-30 and later.
+A list of Canadian MP accounts curated by the House of Commons can be found on Twitter [here](https://twitter.com/i/lists/864088912087715840). Note: this list may not contain all Twitter accounts.
 
-* other_names, when present, lists other names the legislator has gone by officially. This is helpful in cases where a legislator's legal name has changed. These listings will only include the name attributes which differ from the current name, and a start or end date where applicable. Where multiple names exist, other names are listed chronologically by end date. An excerpted example:
-
-	- id:
-		bioguide: B001228
-		thomas: '01465'
-		govtrack: 400039
-		opensecrets: N00007068
-	  name:
-		first: Mary
-		middle: Whitaker
-		last: Bono Mack
-	  other_names:
-	  - last: Bono
-		end: '2007-12-17'
-	  ...
-
-* bio
-	* birthday: The legislator's birthday, in YYYY-MM-DD format.
-	* gender: The legislator's gender, either "M" or "F". (In historical data, we've worked backwards from [history.house.gov's Women in Congress feature](http://history.house.gov/People/Search?filter=6).)
-
-* terms (one entry for each election)
-	* type: The type of the term. Either "sen" for senators or "rep" for representatives and delegates to the House.
-	* start: The date legislative service began: the date the legislator was sworn in, if known, or else the beginning of the legislator's term. Since 1935 regularly elected terms begin on January 3 at noon on odd-numbered years, but when Congress does not first meet on January 3, term start dates might reflect that swearing-in occurred on a later date. (Prior to 1935, terms began on March 4 of odd-numbered years, see [here](https://github.com/unitedstates/congress-legislators/pull/305).) Formatted as YYYY-MM-DD.
-	* end: The date the term ended (because the Congress ended or the legislator died or resigned, etc.). End dates follow the Constitutional end of a term. Since 1935, terms begin and end on January 3 at noon in odd-numbered years, and thus a term end date may also be a term start date. Prior to 1935, terms began on March 4 and ended either on March 3 or March 4. The end date is the last date on which the legislator served this term. Unlike the start date, whether Congress was in session or not does not affect the value of this field.
-	* state: The two-letter, uppercase USPS abbreviation for the state that the legislator is serving from. See below.
-	* how: How the term came to be. This field is generally not present and is currently only set haphazardly in recent data. The field is set to "appointment" for [senators appointed to fill a vacancy](https://www.senate.gov/senators/AppointedSenators.htm). Senators and representatives elected by special election are indicated by `special-election`. For senators currently serving per an appointment, the field `end-type` may be set to `special-election`, in which case the `end` date of the term will reflect the expected special election date to replace the appointed senator. Once the special election occurs and the next senator is sworn in, ending the term of the appointed senator, the end date will be updated to reflect the actual end of service (which will follow the election date).
-	* district: For representatives, the district number they are serving from. At-large districts are district 0. In historical data, unknown district numbers are recorded as -1.
-	* class: For senators, their election class (1, 2, or 3). Note that this is unrelated to seniority.
-	* state_rank: For senators, whether they are the "junior" or "senior" senator (only valid if the term is current, otherwise the senator's rank at the time the term ended).
-	* party: The political party of the legislator. If the legislator changed parties, this is the most recent party held during the term and `party_affiliations` will be set. Values are typically "Democrat", "Independent", or "Republican". The value typically matches the political party of the legislator on the ballot in his or her last election, although for state affiliate parties such as "Democratic Farmer Labor" we will use the national party name ("Democrat") instead to keep the values of this field normalized.
-	* caucus: For independents, the party that the legislator caucuses with, using the same values as the `party` field--although not required for independents with no caucus. Omitted if the legislator caucuses with the party indicated in the party field. When in doubt about the difference between the `party` and `caucus` fields, the `party` field is what displays after the legislator's name (i.e. "(D)") but the `caucus` field is what normally determines committee seniority. This field was added starting with terms for the 113th Congress.
-	* party_affiliations: This field is present if the legislator changed party or caucus affiliation during the term. The value is a list of time periods, with `start` and `end` dates, each of which has a `party` field and a `caucus` field if applicable, with the same meanings as the main `party` and `caucus` fields. The time periods cover the entire term, so the first `start` will match the term `start`, the last `end` will match the term `end`, and the last `party` (and `caucus` if present) will match the term `party` (and `caucus`).
-	* url: The official website URL of the legislator (only valid if the term is current).
-	* address: The mailing address of the legislator's Washington, D.C. office (only valid if the term is current, otherwise the last known address).
-	* phone: The phone number of the legislator's Washington, D.C. office (only valid if the term is current, otherwise the last known number).
-	* fax: The fax number of the legislator's Washington, D.C. office (only valid if the term is current, otherwise the last known number).
-	* contact_form: The website URL of the contact page on the legislator's official website (only valid if the term is current, otherwise the last known URL).
-	* office: Similar to the address field, this is just the room and building number, suitable for display (only valid if the term is current, otherwise the last known office).
-	* rss_url The URL to the official website's RSS feed (only valid if the term is current, otherwise the last known URL).
-
-
-
+Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
 
 
