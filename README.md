@@ -105,7 +105,7 @@ A list of current members of the Canadian House of Commons can be found [here](h
 
 ### Legislator Twitter Accounts
 
-A list of Canadian MP accounts curated by the House of Commons can be found on Twitter [here](https://twitter.com/i/lists/864088912087715840). Note: this list may not contain all Twitter accounts.
+A list of Canadian MP accounts curated by the House of Commons can be found on Twitter [here](https://twitter.com/i/lists/864088912087715840). (Note: this list may not contain all legislator Twitter accounts.)
 
 Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
