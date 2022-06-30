@@ -103,7 +103,7 @@ Data Sources
 
 A list of current members of the Canadian House of Commons can be found [here](https://www.ourcommons.ca/members/en/search) and downloaded as CSV or XML.
 
-### Members of Parliament
+### Legislator Twitter Accounts
 
 A list of Canadian MP accounts curated by the House of Commons can be found on Twitter [here](https://twitter.com/i/lists/864088912087715840). Note: this list may not contain all Twitter accounts.
 
