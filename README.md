@@ -111,12 +111,4 @@ Twitter accounts that could not be matched to a legislator computationally were 
 
 
 
-
-This is scratch code:
-
-File | Download | Description
----- | -------- | -----------
-`legislators-historical` | [YAML](https://theunitedstates.io/congress-legislators/legislators-historical.yaml) [JSON](https://theunitedstates.io/congress-legislators/legislators-historical.json) [CSV](https://theunitedstates.io/congress-legislators/legislators-historical.csv) | Historical Members of Congress (i.e. all Members of Congress except those in the current file).
-`legislators-social-media` | [YAML](https://theunitedstates.io/congress-legislators/legislators-social-media.yaml) [JSON](https://theunitedstates.io/congress-legislators/legislators-social-media.json) | Current social media accounts for Members of Congress. Official accounts only (no campaign or personal accounts).
-`committees-current` | [YAML](https://theunitedstates.io/congress-legislators/committees-current.yaml) [JSON](https://theunitedstates.io/congress-legislators/committees-current.json) | Current committees of the Congress, with subcommittees.
-`committee-membership-current` | [YAML](https://theunitedstates.io/congress-legislators/committee-membership-current.yaml) [JSON](https://theunitedstates.io/congress-legislators/committee-membership-current.json) | Current committee/subcommittee assignments.
+Last updated June 2022.
