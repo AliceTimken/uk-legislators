@@ -2,27 +2,27 @@
 Members of the Canadian House of Commons.
 
 
+
 Overview
 --------
+<!-- Comment: provide a brief and helpful project overview -->
 
 This project provides the following files:
 
 File | Download | Description
 ---- | -------- | -----------
-`Rfile-name` | [Rmd](https://theunitedstates.io/congress-legislators/legislators-current.yaml) | Collect general information on and social media accounts of  serving Members of Congress.
-`dataframe-name` | [RData](https://theunitedstates.io/congress-legislators/legislators-current.yaml) / [CSV](https://theunitedstates.io/congress-legislators/legislators-current.yaml) | Dataset of currently serving Members of Congress.
+`R Markdown file` | [Rmd](https://theunitedstates.io/congress-legislators/legislators-current.yaml) | `R code` for collecting social media data related to Canadian MPs.
+`Twitter handles` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/a652278e67adcaa7462332b8f40c7ef66fecfcfa/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
 
 The data formats are documented below.
 
-This database is maintained through manual edits by Sung Eun Choi, Sam Koprowski, Dhia Hammami, and Alice Timken.
+This database is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
 
-The files are maintained in [YAML](http://www.yaml.org/) format in the main branch of this project. YAML is a serialization format similar in structure to JSON but typically written with one field per line. Like JSON, it allows for nested structure. Each level of nesting is indicated by indentation or a dash. CSV and JSON formatted files are also provided in the `gh-pages` branch --- they're linked above.
-
-This database is maintained through a combination of manual edits by volunteers (from [GovTrack](https://www.govtrack.us), [ProPublica](https://projects.propublica.org/represent/), [MapLight](https://maplight.org/), [FiveThirtyEight](https://fivethirtyeight.com/), and others) and automated imports from a variety of sources including:
 
 
 Data Format Documentation
 -------------------------
+<!-- Comment: describe data files and variables -->
 
 ### Legislators file structure overview
 
@@ -30,9 +30,91 @@ Data Format Documentation
 
 Each legislator record is grouped into four guaranteed parts: id's which relate the record to other databases, name information (first, last, etc.), biographical information (birthday, gender), and terms served in Congress. A typical record looks something like this:
 
+
 ### Data Dictionary
 
-The following fields are available in `legislators-current.yaml` and `legislators-historical.yaml`:
+The following fields are available in `canadian_mp_twitterhandles.csv`:
+
+
+* name
+* screen_name
+* constituency         
+* prov_territory
+* political_affiliation
+* start_date       
+* first_name
+* last_name
+* house
+* title
+
+
+
+-
+The following fields are made available when collecting social media data using the [rtweet package (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
+
+"user_id"                            
+"name"                              
+ [3] 
+ "screen_name"                        
+ "location"                          
+ [5] 
+ "description"                        
+ "url"                               
+ [7] 
+ "protected"                          
+ "followers_count"                   
+ [9] 
+ "friends_count"                      
+ "listed_count"                      
+[11] 
+"created_at"                         
+"favourites_count"                  
+[13] 
+"utc_offset"                         
+"time_zone"                         
+[15] 
+"geo_enabled"                        
+"verified"                          
+[17] 
+"statuses_count"                     
+"lang"                              
+[19] 
+"contributors_enabled"               
+"is_translator"                     
+[21] 
+"is_translation_enabled"             
+"profile_background_color"          
+[23] 
+"profile_background_image_url"       
+"profile_background_image_url_https"
+[25] 
+"profile_background_tile"            
+"profile_image_url"                 
+[27] 
+"profile_image_url_https"            
+"profile_banner_url"                
+[29] 
+"profile_link_color"                 
+"profile_sidebar_border_color"      
+[31] 
+"profile_sidebar_fill_color"         
+"profile_text_color"                
+[33] 
+"profile_use_background_image"       
+"has_extended_profile"              
+[35] 
+"default_profile"                    
+"default_profile_image"             
+[37] 
+"following"                          
+"follow_request_sent"               
+[39] 
+"notifications"                      
+"translator_type" 
+
+
+
+
 
 * id
 	* bioguide: The alphanumeric ID for this legislator in http://bioguide.congress.gov. Note that at one time some legislators (women who had changed their name when they got married) had two entries on the bioguide website. Only one bioguide ID is included here. **This is the best field to use as a primary key.**
