@@ -110,5 +110,12 @@ A list of Canadian MP accounts curated by the House of Commons can be found on T
 Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
 
+## Public domain
+
+This project is [dedicated to the public domain](LICENSE):
+
+> The project is in the public domain within the United States, and copyright and related rights in the work worldwide are waived through the [CC0 1.0 Universal public domain dedication](http://creativecommons.org/publicdomain/zero/1.0/).
+> All contributions to this project will be released under the CC0 dedication. By submitting a pull request, you are agreeing to comply with this waiver of copyright interest.
+
 
 Last updated June 2022.
