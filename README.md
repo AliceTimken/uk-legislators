@@ -12,7 +12,7 @@ This project provides the following files:
 File | Download | Description
 ---- | -------- | -----------
 `R Markdown file` | [Rmd](https://theunitedstates.io/congress-legislators/legislators-current.yaml) | `R code` for collecting social media data related to Canadian MPs.
-`Twitter handles` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/a652278e67adcaa7462332b8f40c7ef66fecfcfa/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
+`Twitter handles` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
 
 The data formats are documented below.
 
@@ -26,91 +26,77 @@ Data Format Documentation
 
 ### Legislators file structure overview
 
+`canadian_mp_twitterhandles.csv` contains general information on Canadian Members of Parliament in the 44th House of Commons (elected in 2021).
+
+`R Markdown file` is an R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package] (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0)  as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.
+
 `legislators-current.yaml` and `legislators-historical.yaml` contain biographical information on all Members of Congress that have ever served in Congress, that is, since 1789, as well as cross-walks into other databases.
 
 Each legislator record is grouped into four guaranteed parts: id's which relate the record to other databases, name information (first, last, etc.), biographical information (birthday, gender), and terms served in Congress. A typical record looks something like this:
 
 
-### Data Dictionary
+### Data Dictionary (CSV)
 
 The following fields are available in `canadian_mp_twitterhandles.csv`:
 
 
-* name
-* screen_name
-* constituency         
-* prov_territory
-* political_affiliation
-* start_date       
-* first_name
-* last_name
-* house
-* title
+* name:
+* screen_name:
+* constituency:
+* prov_territory:
+* political_affiliation:
+* start_date:
+* first_name:
+* last_name:
+* house:
+* title:
 
 
 
--
-The following fields are made available when collecting social media data using the [rtweet package (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
+### Data Dictionary (Twitter Users)
 
-"user_id"                            
-"name"                              
- [3] 
- "screen_name"                        
- "location"                          
- [5] 
- "description"                        
- "url"                               
- [7] 
- "protected"                          
- "followers_count"                   
- [9] 
- "friends_count"                      
- "listed_count"                      
-[11] 
-"created_at"                         
-"favourites_count"                  
-[13] 
-"utc_offset"                         
-"time_zone"                         
-[15] 
-"geo_enabled"                        
-"verified"                          
-[17] 
-"statuses_count"                     
-"lang"                              
-[19] 
-"contributors_enabled"               
-"is_translator"                     
-[21] 
-"is_translation_enabled"             
-"profile_background_color"          
-[23] 
-"profile_background_image_url"       
-"profile_background_image_url_https"
-[25] 
-"profile_background_tile"            
-"profile_image_url"                 
-[27] 
-"profile_image_url_https"            
-"profile_banner_url"                
-[29] 
-"profile_link_color"                 
-"profile_sidebar_border_color"      
-[31] 
-"profile_sidebar_fill_color"         
-"profile_text_color"                
-[33] 
-"profile_use_background_image"       
-"has_extended_profile"              
-[35] 
-"default_profile"                    
-"default_profile_image"             
-[37] 
-"following"                          
-"follow_request_sent"               
-[39] 
-"notifications"                      
-"translator_type" 
+The following fields are made available when collecting social media data using the [rtweet package] (https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
+
+* user_id                           
+* name                   
+* screen_name        
+* location                   
+* description                
+* url                              
+* protected
+* followers_count         
+* friends_count            
+* listed_count
+* created_at            
+* favourites_count
+* utc_offset          
+* time_zone
+* geo_enabled      
+* verified 
+* statuses_count
+* lang 
+* contributors_enabled
+* is_translator
+* is_translation_enabled
+* profile_background_color
+* profile_background_image_url
+* profile_background_image_url_https
+* profile_background_tile
+* profile_image_url
+* profile_image_url_https
+* profile_banner_url
+* profile_link_color
+* profile_sidebar_border_color
+* profile_sidebar_fill_color
+* profile_text_color
+* profile_use_background_image
+* has_extended_profile
+* default_profile
+* default_profile_image
+* following  
+* follow_request_sent
+* notifications 
+* translator_type
 
 
 
