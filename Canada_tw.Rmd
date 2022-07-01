@@ -1,0 +1,787 @@
+---
+title: "Text Analysis Canadian Twitter Data"
+---
+title: "MP Tweets"
+author: 'Group: Alice, Dhia, Sam, Sung'
+date: "6/30/2022"
+output:
+  pdf_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+######Load Libraries####
+
+```{r}
+library(tidyverse)
+```
+
+####[All MP Tweets]Loading Data
+
+Description: We work with a dataset includes 17,156 tweets -which we'll call "MP Tweets"-  from member of the 44th Canadian House of Commons between 6/3/2020 and 6/9/2020. The tweets were compiled using a tool called TAGS that pulls tweets from the past 6 to 9 days using a simple Google Sheet template where you can search by keyword or user. The 35,883 tweets in this dataset include an average of 5,126 tweets per day, which is not comprehensive due to Twitter’s API limits.
+
+Let’s begin by loading the MP tweets and transform them into tidytext format:
+
+
+```{r}
+load("~/Desktop/Data/parliamenttweets.rdata")
+mptweets=as.data.frame(container)
+head(mptweets$text)
+library(tidytext)
+library(dplyr)
+tidy_MP_tweets <- mptweets %>%
+    select(created_at,text) %>%
+    unnest_tokens("word", text)
+```
+
+####[All MP Tweets]Creating a Corpus
+Another unique feature of quantitative text analysis is that it typically requires new data formats that allow algorithms to quickly compare one document to a lot of other documents in order to identify patterns in word usage that can be used to identify latent themes, or address the overall popularity of a word or words in a single document vs. a group of documents. One of the most common data formats in the field of Natural Language Processing is a corpus.
+
+In R, the tm package is often used to create a corpus object. This package can be used to read in data in many different formats– including text within data frames, .txt files, or .doc files. Let’s begin with an example of how to read in text from within a data frame.
+
+In order to create a corpus of MP tweets, we need to use the Corpus function within the tm package. First let’s install that package
+```{r}
+install.packages("tm", repos="http://R-Forge.R-project.org")
+```
+Now let’s load the tm package in order to use its Corpus function:
+
+```{r}
+library(tm)
+MP_corpus <- Corpus(VectorSource(as.vector(mptweets$text))) 
+```
+
+####[All MP Tweets]Text Pre-Processing
+
+Before we begin running quantitative analyses of text, we first need to decide precisely which type of text should be included in our analyses. For example, as the code above showed, very common words such as “the” are often not very informative. That is, we typically do not care if one author uses the word “the” more often than another in most forms of quantitative text analysis, but we might care a lot about how many times a politician uses the word “economy” on Twitter.
+
+Stopwords
+
+Common words such as “the”, “and”, “bot”, “for”, “is”, etc. are often described as “stop words,” meaning that they should not be included in a quantitative text analysis. Removing stop words is fairly easy regardless of whether you are working with a Corpus object or a tidytext object assuming you are working with a widely used language such as English. Let’s begin with the former, using the tm_map function as follows:
+
+
+```{r}
+MP_corpus <- tm_map(MP_corpus, removeWords, stopwords("english"))
+MP_corpus <- tm_map(MP_corpus, removeWords, stopwords("french"))
+
+```
+
+In tidytext we can remove stopwords as follows:
+
+```{r}
+stop_words_en_fr<- read_csv("~/Desktop/Data/stop_words.csv")
+typeof(stop_words_en_fr)
+
+    tidy_MP_tweets<-tidy_MP_tweets %>%
+      anti_join(stop_words_en_fr)%>%
+      filter(!(word=="https"|
+             word=="rt"|
+             word=="t.co"|
+             word=="amp"|
+             word=="de"|
+             word=="1"|
+             word=="à"|
+             word=="la"|
+             word=="une"
+             ))
+```
+
+And now we can repeat the count of top words above:
+
+```{r}
+tidy_MP_tweets %>%
+  count(word) %>%
+    arrange(desc(n))
+```
+
+
+Looks better, but we still have a number of terms in there that might not be very useful such as “https” or “t.co”, which is an abbreviation used in links shared on twitter. Likewise “rt” is an abbreviation for “retweet,” and does not thus carry much meaning.
+
+If we wanted to remove these words, we could create a custom list of stop words in the form of a character vector, and use the same anti_join function above to remove all words within this custom list.
+
+Punctuation
+
+Another common step in pre-processing text is to remove all punctuation marks. This is generally considered important, since to an algorithm the punctuation mark “,” will assume a unique numeric identity just like the term “economy.” It is often therefore advisable to remove punctuation marks in an automated text analysis, but there are also a number of cases where this can be problematic. Consider the phrase, “Let’s eat, Grandpa” vs. “Lets eat Grandpa.”
+
+To remove punctuation marks within a Corpus object, we use this code:
+
+```{r}
+MP_corpus <- tm_map(MP_corpus, content_transformer(removePunctuation))
+```
+
+An advantage of tidytext is that it removes punctuation automatically.
+
+Removing Numbers
+
+In many texts, numbers can carry significant meaning. Consider, for example, a text about the 4th of July. On the other hand, many numbers add little to the meaning of a text, and so it has become commonplace in the field of natural language processing to remove them from an analysis.
+
+One can remove numbers from a Corpus object as follows:
+
+```{r}
+MP_corpus <- tm_map(MP_corpus, content_transformer(removeNumbers))
+```
+
+
+This is also very easy in tidytext using basic grep commands (note the "\\b\\d+\\b" text here tells R to remove all numeric digits and the ‘-’ sign means grep excludes them rather than includes them):
+
+```{r}
+tidy_MP_tweets<-tidy_MP_tweets[-grep("\\b\\d+\\b",
+                                           tidy_MP_tweets$word),]
+```
+Word Case
+
+There are also several less obvious issues in text-preprocessing. For example, do we want “Economy” to be counted as a different word than “economy”? Probably. What about “God”, and “god”? That one is much less straightforward. Nevertheless, it has become commonplace to force all text into lower case in quantitative text analysis. Here’s how to do it with a Corpus object:
+
+```{r}
+MP_corpus <- tm_map(MP_corpus,  content_transformer(tolower)) 
+```
+Once again tidytext automatically makes all words lower case.
+
+Removing Whitespaces
+
+Often, a single white space or group of whitespaces can also be considered to be a “word” within a corpus. To prevent this, do the following with a Corpus object:
+
+```{r}
+MP_corpus <- tm_map(MP_corpus, content_transformer(stripWhitespace))
+```
+
+In tidytext we can use the gsub function again as follows (s+ describes a blank space)
+
+```{r}
+tidy_MP_tweets$word <- gsub("\\s+","",tidy_MP_tweets$word)
+```
+
+Stemming
+
+A final common step in text-pre processing is stemming. Stemming a word refers to replacing it with its most basic conjugate form. For example the stem of the word “typing” is “type.” Stemming is common practice because we don’t want the words “type” and “typing” to convey different meanings to algorithms that we will soon use to extract latent themes from unstructured texts.
+
+Here is the procedure for stemming words within a Corpus object:
+```{r}
+MP_corpus  <- tm_map(MP_corpus, content_transformer(stemDocument), language = "english")
+MP_corpus  <- tm_map(MP_corpus, content_transformer(stemDocument), language = "french")
+
+```
+
+And here is some code to stem tidytext data– we are also going to employ the SnowballC package (which you may need to install). This package includes the wordStem function we will use to stem the tidytext object:
+```{r}
+library(SnowballC)
+  tidy_MP_tweets<-tidy_MP_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="en")))
+    tidy_MP_tweets<-tidy_MP_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="fr")))
+
+```
+
+The Document-Term Matrix
+
+A final core concept in quantitative text analysis is a document-term matrix. This is a matrix where each word is a row and each column is a document. The number within each cell describes the number of times the word appears in the document. Many of the most popular forms of text analysis, such as topic models, require a document-term matrix.
+
+To create a document-term matrix from a Corpus object, use the following code:
+
+```{r}
+MP_DTM <- DocumentTermMatrix(MP_corpus, control = list(wordLengths = c(2, Inf)))
+```
+
+The end of the code above specifies that we only want to include words that are at least two characters long.
+
+We can view the first five rows of the DTM and two of its columns as follows:
+
+```{r}
+inspect(MP_DTM[1:5,3:8])
+```
+
+To create a DTM in tidytext we can use the following code:
+
+```{r}
+tidy_MP_DTM<-
+  tidy_MP_tweets %>%
+  count(created_at, word) %>%
+  cast_dtm(created_at, word, n)
+```
+
+####[All MP Tweets]Word Counting
+
+Next, let’s count the top words after removing stop words (frequent words such as “the”, and “and”) as well as other unmeaningful words (e.g. https):
+
+
+```{r}
+data("stop_words")
+
+top_words<-
+   tidy_MP_tweets %>%
+      anti_join(stop_words_en_fr) %>%
+        filter(!(word=="https"|
+                 word=="rt"|
+                 word=="t.co"|
+                 word=="amp")) %>%
+            count(word) %>%
+              arrange(desc(n))
+```
+
+Now let’s make a graph of the top 20 words
+
+```{r}
+library(ggplot2)
+top_words %>%
+  slice(1:30) %>%
+    ggplot(aes(x=reorder(word, -n), y=n, fill=word))+
+      geom_bar(stat="identity")+
+        theme_minimal()+
+        theme(axis.text.x = 
+            element_text(angle = 60, hjust = 1, size=13))+
+        theme(plot.title = 
+            element_text(hjust = 0.5, size=18))+
+          ylab("Frequency")+
+          xlab("")+
+          ggtitle("Most Frequent Words in MP Tweets")+
+          guides(fill=FALSE)
+```
+
+
+####[All MP Tweets]Term Frequency Inverse Document Frequency (tf-idf)
+Though we have already removed very common “stop words” from our analysis, it is common practice in quantitative text analysis to identify unusual words that might set one document apart from the others (this will become particularly important when we get to more advanced forms of pattern recognition in text later on). As the figure below shows, the metric most commonly used to identify this type of words is “Term Frequency Inverse Document Frequency” (tf-idf).
+
+We can calculate the tf-idf for the BLM tweets databased in tidytext as follows:
+
+```{r}
+tidy_MP_tfidf<- mptweets %>%
+    select(created_at,text) %>%
+      unnest_tokens("word", text) %>%
+        anti_join(stop_words) %>%
+           count(word, created_at) %>%
+              bind_tf_idf(word, created_at, n)
+```
+
+Now let’s see what the most unusual words are:
+
+```{r}
+top_tfidf<-tidy_MP_tfidf %>%
+  arrange(desc(tf_idf))
+
+top_tfidf$word[1:10]
+```
+
+
+The tfidf increases the more a term appears in a document but it is negatively weighted by the overall frequency of terms across all documents in the dataset or Corpus. In simpler terms, the tf-idf helps us capture which words are not only important within a given document but also distinctive vis-a-vis the broader corpus or tidytext dataset.
+
+####Dictionary-Based Quantitative Text Analysis
+
+Though word frequency counts and tf-idf can be an informative way to examine text-based data, another very popular techniques involves counting the number of words that appear in each document that have been assigned a particular meaning or value to the researcher. There are numerous examples that we shall discuss below— some of which are more sophisticated than others.
+
+To begin, let’s make our own dictionary of terms we want to examine from the BLM tweet dataset. Suppose we are doing a study of economic issues, and want to subset those tweets that contain words associated with the economy. To do this, we could first create a list or “dictionary” or terms that are associated with the economy.
+
+```{r}
+SocialMovements_dictionary_en_fr<-c("protest","mobilization","rally","demonstration","revolution","riot","revolt","manifestation", "mobilisation", "révolution", "révolte", "marche", "rassemblement", "émeutes")
+```
+
+Having created a very simple/primitive dictionary, we can now subset the parts of our tidytext dataframe that contain these words using the str_detect function within Hadley Wickham’s stringr package:
+
+```{r}
+library(stringr)
+head(mptweets$text)
+SocialMovements_tweets<-mptweets[str_detect(mptweets$text, paste(SocialMovements_dictionary_en_fr, collapse="|")),]
+```
+
+####[Social Movements Tweets]Loading Data
+
+Description: We work with a dataset includes 17,156 tweets -which we'll call "MP Tweets"-  from member of the 44th Canadian House of Commons between 6/3/2020 and 6/9/2020. The tweets were compiled using a tool called TAGS that pulls tweets from the past 6 to 9 days using a simple Google Sheet template where you can search by keyword or user. The 35,883 tweets in this dataset include an average of 5,126 tweets per day, which is not comprehensive due to Twitter’s API limits.
+
+Let’s begin by loading the MP tweets and transform them into tidytext format:
+
+
+```{r}
+tidy_SM_tweets <- SocialMovements_tweets %>%
+    select(created_at,text) %>%
+    unnest_tokens("word", text)
+```
+
+####[Social Movements Tweets]Creating a Corpus
+Another unique feature of quantitative text analysis is that it typically requires new data formats that allow algorithms to quickly compare one document to a lot of other documents in order to identify patterns in word usage that can be used to identify latent themes, or address the overall popularity of a word or words in a single document vs. a group of documents. One of the most common data formats in the field of Natural Language Processing is a corpus.
+
+In R, the tm package is often used to create a corpus object. This package can be used to read in data in many different formats– including text within data frames, .txt files, or .doc files. Let’s begin with an example of how to read in text from within a data frame.
+
+In order to create a corpus of MP tweets, we need to use the Corpus function within the tm package. First let’s install that package
+```{r}
+install.packages("tm", repos="http://R-Forge.R-project.org")
+```
+Now let’s load the tm package in order to use its Corpus function:
+
+```{r}
+library(tm)
+SM_corpus <- Corpus(VectorSource(as.vector(mptweets$text))) 
+```
+
+####[Social Movements Tweets]Text Pre-Processing
+
+Before we begin running quantitative analyses of text, we first need to decide precisely which type of text should be included in our analyses. For example, as the code above showed, very common words such as “the” are often not very informative. That is, we typically do not care if one author uses the word “the” more often than another in most forms of quantitative text analysis, but we might care a lot about how many times a politician uses the word “economy” on Twitter.
+
+Stopwords
+
+Common words such as “the”, “and”, “bot”, “for”, “is”, etc. are often described as “stop words,” meaning that they should not be included in a quantitative text analysis. Removing stop words is fairly easy regardless of whether you are working with a Corpus object or a tidytext object assuming you are working with a widely used language such as English. Let’s begin with the former, using the tm_map function as follows:
+
+
+```{r}
+SM_corpus <- tm_map(SM_corpus, removeWords, stopwords("english"))
+SM_corpus <- tm_map(SM_corpus, removeWords, stopwords("french"))
+
+```
+
+In tidytext we can remove stopwords as follows:
+
+```{r}
+stop_words_en_fr<- read_csv("~/Desktop/Data/stop_words.csv")
+typeof(stop_words_en_fr)
+
+    tidy_SM_tweets<-tidy_SM_tweets %>%
+      anti_join(stop_words_en_fr)%>%
+      filter(!(word=="https"|
+             word=="rt"|
+             word=="t.co"|
+             word=="amp"|
+             word=="de"|
+             word=="1"|
+             word=="à"|
+             word=="la"|
+             word=="une"
+             ))
+```
+
+And now we can repeat the count of top words above:
+
+```{r}
+tidy_SM_tweets %>%
+  count(word) %>%
+    arrange(desc(n))
+```
+
+
+Looks better, but we still have a number of terms in there that might not be very useful such as “https” or “t.co”, which is an abbreviation used in links shared on twitter. Likewise “rt” is an abbreviation for “retweet,” and does not thus carry much meaning.
+
+If we wanted to remove these words, we could create a custom list of stop words in the form of a character vector, and use the same anti_join function above to remove all words within this custom list.
+
+Punctuation
+
+Another common step in pre-processing text is to remove all punctuation marks. This is generally considered important, since to an algorithm the punctuation mark “,” will assume a unique numeric identity just like the term “economy.” It is often therefore advisable to remove punctuation marks in an automated text analysis, but there are also a number of cases where this can be problematic. Consider the phrase, “Let’s eat, Grandpa” vs. “Lets eat Grandpa.”
+
+To remove punctuation marks within a Corpus object, we use this code:
+
+```{r}
+SM_corpus <- tm_map(SM_corpus, content_transformer(removePunctuation))
+```
+
+An advantage of tidytext is that it removes punctuation automatically.
+
+Removing Numbers
+
+In many texts, numbers can carry significant meaning. Consider, for example, a text about the 4th of July. On the other hand, many numbers add little to the meaning of a text, and so it has become commonplace in the field of natural language processing to remove them from an analysis.
+
+One can remove numbers from a Corpus object as follows:
+
+```{r}
+SM_corpus <- tm_map(SM_corpus, content_transformer(removeNumbers))
+```
+
+
+This is also very easy in tidytext using basic grep commands (note the "\\b\\d+\\b" text here tells R to remove all numeric digits and the ‘-’ sign means grep excludes them rather than includes them):
+
+```{r}
+tidy_SM_tweets<-tidy_SM_tweets[-grep("\\b\\d+\\b",
+                                           tidy_SM_tweets$word),]
+```
+Word Case
+
+There are also several less obvious issues in text-preprocessing. For example, do we want “Economy” to be counted as a different word than “economy”? Probably. What about “God”, and “god”? That one is much less straightforward. Nevertheless, it has become commonplace to force all text into lower case in quantitative text analysis. Here’s how to do it with a Corpus object:
+
+```{r}
+SM_corpus <- tm_map(SM_corpus,  content_transformer(tolower)) 
+```
+Once again tidytext automatically makes all words lower case.
+
+Removing Whitespaces
+
+Often, a single white space or group of whitespaces can also be considered to be a “word” within a corpus. To prevent this, do the following with a Corpus object:
+
+```{r}
+SM_corpus <- tm_map(SM_corpus, content_transformer(stripWhitespace))
+```
+
+In tidytext we can use the gsub function again as follows (s+ describes a blank space)
+
+```{r}
+tidy_SM_tweets$word <- gsub("\\s+","",tidy_SM_tweets$word)
+```
+
+Stemming
+
+A final common step in text-pre processing is stemming. Stemming a word refers to replacing it with its most basic conjugate form. For example the stem of the word “typing” is “type.” Stemming is common practice because we don’t want the words “type” and “typing” to convey different meanings to algorithms that we will soon use to extract latent themes from unstructured texts.
+
+Here is the procedure for stemming words within a Corpus object:
+```{r}
+SM_corpus  <- tm_map(SM_corpus, content_transformer(stemDocument), language = "english")
+SM_corpus  <- tm_map(SM_corpus, content_transformer(stemDocument), language = "french")
+
+```
+
+And here is some code to stem tidytext data– we are also going to employ the SnowballC package (which you may need to install). This package includes the wordStem function we will use to stem the tidytext object:
+```{r}
+library(SnowballC)
+  tidy_SM_tweets<-tidy_SM_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="en")))
+    tidy_SM_tweets<-tidy_SM_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="fr")))
+
+```
+
+The Document-Term Matrix
+
+A final core concept in quantitative text analysis is a document-term matrix. This is a matrix where each word is a row and each column is a document. The number within each cell describes the number of times the word appears in the document. Many of the most popular forms of text analysis, such as topic models, require a document-term matrix.
+
+To create a document-term matrix from a Corpus object, use the following code:
+
+```{r}
+SM_DTM <- DocumentTermMatrix(SM_corpus, control = list(wordLengths = c(2, Inf)))
+```
+
+The end of the code above specifies that we only want to include words that are at least two characters long.
+
+We can view the first five rows of the DTM and two of its columns as follows:
+
+```{r}
+inspect(SM_DTM[1:5,3:8])
+```
+
+To create a DTM in tidytext we can use the following code:
+
+```{r}
+tidy_SM_DTM<-
+  tidy_SM_tweets %>%
+  count(created_at, word) %>%
+  cast_dtm(created_at, word, n)
+```
+
+####[Social Movements Tweets]Word Counting
+
+Next, let’s count the top words after removing stop words (frequent words such as “the”, and “and”) as well as other unmeaningful words (e.g. https):
+
+
+```{r}
+data("stop_words")
+
+top_words<-
+   tidy_SM_tweets %>%
+      anti_join(stop_words_en_fr) %>%
+        filter(!(word=="https"|
+                 word=="rt"|
+                 word=="t.co"|
+                 word=="amp")) %>%
+            count(word) %>%
+              arrange(desc(n))
+```
+
+Now let’s make a graph of the top 20 words
+
+```{r}
+library(ggplot2)
+top_words %>%
+  slice(1:30) %>%
+    ggplot(aes(x=reorder(word, -n), y=n, fill=word))+
+      geom_bar(stat="identity")+
+        theme_minimal()+
+        theme(axis.text.x = 
+            element_text(angle = 60, hjust = 1, size=13))+
+        theme(plot.title = 
+            element_text(hjust = 0.5, size=18))+
+          ylab("Frequency")+
+          xlab("")+
+          ggtitle("Most Frequent Words in MP Tweets about
+                   Social Movements in January-February 2022")+
+          guides(fill=FALSE)
+```
+
+
+####[Social Movements Tweets]Term Frequency Inverse Document Frequency (tf-idf)
+Though we have already removed very common “stop words” from our analysis, it is common practice in quantitative text analysis to identify unusual words that might set one document apart from the others (this will become particularly important when we get to more advanced forms of pattern recognition in text later on). As the figure below shows, the metric most commonly used to identify this type of words is “Term Frequency Inverse Document Frequency” (tf-idf).
+
+We can calculate the tf-idf for the BLM tweets databased in tidytext as follows:
+
+```{r}
+tidy_SM_tfidf<- mptweets %>%
+    select(created_at,text) %>%
+      unnest_tokens("word", text) %>%
+        anti_join(stop_words) %>%
+           count(word, created_at) %>%
+              bind_tf_idf(word, created_at, n)
+```
+
+Now let’s see what the most unusual words are:
+
+```{r}
+top_tfidf<-tidy_SM_tfidf %>%
+  arrange(desc(tf_idf))
+
+top_tfidf$word[1:10]
+```
+
+
+The tfidf increases the more a term appears in a document but it is negatively weighted by the overall frequency of terms across all documents in the dataset or Corpus. In simpler terms, the tf-idf helps us capture which words are not only important within a given document but also distinctive vis-a-vis the broader corpus or tidytext dataset.
+
+####Dictionary-Based Quantitative Text Analysis
+
+Though word frequency counts and tf-idf can be an informative way to examine text-based data, another very popular techniques involves counting the number of words that appear in each document that have been assigned a particular meaning or value to the researcher. There are numerous examples that we shall discuss below— some of which are more sophisticated than others.
+
+To begin, let’s make our own dictionary of terms we want to examine from the BLM tweet dataset. Suppose we are doing a study of economic issues, and want to subset those tweets that contain words associated with the economy. To do this, we could first create a list or “dictionary” or terms that are associated with the economy.
+
+```{r}
+Ottawa_dictionary_en_fr<-c("Ottawa","Ontario","capital","Carleton", "capitale")
+```
+
+Having created a very simple/primitive dictionary, we can now subset the parts of our tidytext dataframe that contain these words using the str_detect function within Hadley Wickham’s stringr package:
+
+```{r}
+library(stringr)
+head(mptweets$text)
+Ottawa_tweets<-mptweets[str_detect(mptweets$text, paste(Ottawa_dictionary_en_fr, collapse="|")),]
+```
+
+
+####[Ottawa Tweets]Loading Data
+
+Description: We work with a dataset includes 17,156 tweets -which we'll call "MP Tweets"-  from member of the 44th Canadian House of Commons between 6/3/2020 and 6/9/2020. The tweets were compiled using a tool called TAGS that pulls tweets from the past 6 to 9 days using a simple Google Sheet template where you can search by keyword or user. The 35,883 tweets in this dataset include an average of 5,126 tweets per day, which is not comprehensive due to Twitter’s API limits.
+
+Let’s begin by loading the MP tweets and transform them into tidytext format:
+
+
+```{r}
+tidy_Ottawa_tweets <- Ottawa_tweets %>%
+    select(created_at,text) %>%
+    unnest_tokens("word", text)
+```
+
+####[Ottawa Tweets]Creating a Corpus
+Another unique feature of quantitative text analysis is that it typically requires new data formats that allow algorithms to quickly compare one document to a lot of other documents in order to identify patterns in word usage that can be used to identify latent themes, or address the overall popularity of a word or words in a single document vs. a group of documents. One of the most common data formats in the field of Natural Language Processing is a corpus.
+
+In R, the tm package is often used to create a corpus object. This package can be used to read in data in many different formats– including text within data frames, .txt files, or .doc files. Let’s begin with an example of how to read in text from within a data frame.
+
+In order to create a corpus of MP tweets, we need to use the Corpus function within the tm package. First let’s install that package
+```{r}
+install.packages("tm", repos="http://R-Forge.R-project.org")
+```
+Now let’s load the tm package in order to use its Corpus function:
+
+```{r}
+library(tm)
+Ottawa_corpus <- Corpus(VectorSource(as.vector(mptweets$text))) 
+```
+
+####[Ottawa Tweets]Text Pre-Processing
+
+Before we begin running quantitative analyses of text, we first need to decide precisely which type of text should be included in our analyses. For example, as the code above showed, very common words such as “the” are often not very informative. That is, we typically do not care if one author uses the word “the” more often than another in most forms of quantitative text analysis, but we might care a lot about how many times a politician uses the word “economy” on Twitter.
+
+Stopwords
+
+Common words such as “the”, “and”, “bot”, “for”, “is”, etc. are often described as “stop words,” meaning that they should not be included in a quantitative text analysis. Removing stop words is fairly easy regardless of whether you are working with a Corpus object or a tidytext object assuming you are working with a widely used language such as English. Let’s begin with the former, using the tm_map function as follows:
+
+
+```{r}
+Ottawa_corpus <- tm_map(Ottawa_corpus, removeWords, stopwords("english"))
+Ottawa_corpus <- tm_map(Ottawa_corpus, removeWords, stopwords("french"))
+
+```
+
+In tidytext we can remove stopwords as follows:
+
+```{r}
+stop_words_en_fr<- read_csv("~/Desktop/Data/stop_words.csv")
+typeof(stop_words_en_fr)
+
+    tidy_Ottawa_tweets<-tidy_Ottawa_tweets %>%
+      anti_join(stop_words_en_fr)%>%
+      filter(!(word=="https"|
+             word=="rt"|
+             word=="t.co"|
+             word=="amp"|
+             word=="de"|
+             word=="1"|
+             word=="à"|
+             word=="la"|
+             word=="une"
+             ))
+```
+
+And now we can repeat the count of top words above:
+
+```{r}
+tidy_Ottawa_tweets %>%
+  count(word) %>%
+    arrange(desc(n))
+```
+
+
+Looks better, but we still have a number of terms in there that might not be very useful such as “https” or “t.co”, which is an abbreviation used in links shared on twitter. Likewise “rt” is an abbreviation for “retweet,” and does not thus carry much meaning.
+
+If we wanted to remove these words, we could create a custom list of stop words in the form of a character vector, and use the same anti_join function above to remove all words within this custom list.
+
+Punctuation
+
+Another common step in pre-processing text is to remove all punctuation marks. This is generally considered important, since to an algorithm the punctuation mark “,” will assume a unique numeric identity just like the term “economy.” It is often therefore advisable to remove punctuation marks in an automated text analysis, but there are also a number of cases where this can be problematic. Consider the phrase, “Let’s eat, Grandpa” vs. “Lets eat Grandpa.”
+
+To remove punctuation marks within a Corpus object, we use this code:
+
+```{r}
+Ottawa_corpus <- tm_map(Ottawa_corpus, content_transformer(removePunctuation))
+```
+
+An advantage of tidytext is that it removes punctuation automatically.
+
+Removing Numbers
+
+In many texts, numbers can carry significant meaning. Consider, for example, a text about the 4th of July. On the other hand, many numbers add little to the meaning of a text, and so it has become commonplace in the field of natural language processing to remove them from an analysis.
+
+One can remove numbers from a Corpus object as follows:
+
+```{r}
+Ottawa_corpus <- tm_map(Ottawa_corpus, content_transformer(removeNumbers))
+```
+
+
+This is also very easy in tidytext using basic grep commands (note the "\\b\\d+\\b" text here tells R to remove all numeric digits and the ‘-’ sign means grep excludes them rather than includes them):
+
+```{r}
+tidy_Ottawa_tweets<-tidy_Ottawa_tweets[-grep("\\b\\d+\\b",
+                                           tidy_Ottawa_tweets$word),]
+```
+Word Case
+
+There are also several less obvious issues in text-preprocessing. For example, do we want “Economy” to be counted as a different word than “economy”? Probably. What about “God”, and “god”? That one is much less straightforward. Nevertheless, it has become commonplace to force all text into lower case in quantitative text analysis. Here’s how to do it with a Corpus object:
+
+```{r}
+Ottawa_corpus <- tm_map(Ottawa_corpus,  content_transformer(tolower)) 
+```
+Once again tidytext automatically makes all words lower case.
+
+Removing Whitespaces
+
+Often, a single white space or group of whitespaces can also be considered to be a “word” within a corpus. To prevent this, do the following with a Corpus object:
+
+```{r}
+Ottawa_corpus <- tm_map(Ottawa_corpus, content_transformer(stripWhitespace))
+```
+
+In tidytext we can use the gsub function again as follows (s+ describes a blank space)
+
+```{r}
+tidy_Ottawa_tweets$word <- gsub("\\s+","",tidy_Ottawa_tweets$word)
+```
+
+Stemming
+
+A final common step in text-pre processing is stemming. Stemming a word refers to replacing it with its most basic conjugate form. For example the stem of the word “typing” is “type.” Stemming is common practice because we don’t want the words “type” and “typing” to convey different meanings to algorithms that we will soon use to extract latent themes from unstructured texts.
+
+Here is the procedure for stemming words within a Corpus object:
+```{r}
+Ottawa_corpus  <- tm_map(Ottawa_corpus, content_transformer(stemDocument), language = "english")
+Ottawa_corpus  <- tm_map(Ottawa_corpus, content_transformer(stemDocument), language = "french")
+
+```
+
+And here is some code to stem tidytext data– we are also going to employ the SnowballC package (which you may need to install). This package includes the wordStem function we will use to stem the tidytext object:
+```{r}
+library(SnowballC)
+  tidy_Ottawa_tweets<-tidy_Ottawa_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="en")))
+    tidy_Ottawa_tweets<-tidy_Ottawa_tweets %>%
+      mutate_at("word", funs(wordStem((.), language="fr")))
+
+```
+
+The Document-Term Matrix
+
+A final core concept in quantitative text analysis is a document-term matrix. This is a matrix where each word is a row and each column is a document. The number within each cell describes the number of times the word appears in the document. Many of the most popular forms of text analysis, such as topic models, require a document-term matrix.
+
+To create a document-term matrix from a Corpus object, use the following code:
+
+```{r}
+Ottawa_DTM <- DocumentTermMatrix(Ottawa_corpus, control = list(wordLengths = c(2, Inf)))
+```
+
+The end of the code above specifies that we only want to include words that are at least two characters long.
+
+We can view the first five rows of the DTM and two of its columns as follows:
+
+```{r}
+inspect(Ottawa_DTM[1:5,3:8])
+```
+
+To create a DTM in tidytext we can use the following code:
+
+```{r}
+tidy_Ottawa_DTM<-
+  tidy_Ottawa_tweets %>%
+  count(created_at, word) %>%
+  cast_dtm(created_at, word, n)
+```
+
+####[Ottawa Tweets]Word Counting
+
+Next, let’s count the top words after removing stop words (frequent words such as “the”, and “and”) as well as other unmeaningful words (e.g. https):
+
+
+```{r}
+data("stop_words")
+
+top_words<-
+   tidy_Ottawa_tweets %>%
+      anti_join(stop_words_en_fr) %>%
+        filter(!(word=="https"|
+                 word=="rt"|
+                 word=="t.co"|
+                 word=="amp")) %>%
+            count(word) %>%
+              arrange(desc(n))
+```
+
+Now let’s make a graph of the top 20 words
+
+```{r}
+library(ggplot2)
+top_words %>%
+  slice(1:30) %>%
+    ggplot(aes(x=reorder(word, -n), y=n, fill=word))+
+      geom_bar(stat="identity")+
+        theme_minimal()+
+        theme(axis.text.x = 
+            element_text(angle = 60, hjust = 1, size=13))+
+        theme(plot.title = 
+            element_text(hjust = 0.5, size=18))+
+          ylab("Frequency")+
+          xlab("")+
+          ggtitle("Most Frequent Words in MP Tweets about
+                   Ottawa in January-February 2022")+
+          guides(fill=FALSE)
+```
+
+
+####[Ottawa Tweets]Term Frequency Inverse Document Frequency (tf-idf)
+Though we have already removed very common “stop words” from our analysis, it is common practice in quantitative text analysis to identify unusual words that might set one document apart from the others (this will become particularly important when we get to more advanced forms of pattern recognition in text later on). As the figure below shows, the metric most commonly used to identify this type of words is “Term Frequency Inverse Document Frequency” (tf-idf).
+
+We can calculate the tf-idf for the BLM tweets databased in tidytext as follows:
+
+```{r}
+tidy_Ottawa_tfidf<- mptweets %>%
+    select(created_at,text) %>%
+      unnest_tokens("word", text) %>%
+        anti_join(stop_words) %>%
+           count(word, created_at) %>%
+              bind_tf_idf(word, created_at, n)
+```
+
+Now let’s see what the most unusual words are:
+
+```{r}
+top_tfidf<-tidy_Ottawa_tfidf %>%
+  arrange(desc(tf_idf))
+
+top_tfidf$word[1:10]
+```
+
+
+The tfidf increases the more a term appears in a document but it is negatively weighted by the overall frequency of terms across all documents in the dataset or Corpus. In simpler terms, the tf-idf helps us capture which words are not only important within a given document but also distinctive vis-a-vis the broader corpus or tidytext dataset.
