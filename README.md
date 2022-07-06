@@ -11,8 +11,9 @@ This project provides the following files:
 
 File | Download | Description
 ---- | -------- | -----------
-`Extracting MP Tweets` | [Rmd](https://github.com/AliceTimken/canadian-legislators/blob/b6afbda0218b3a735567d74e47c20dfe87807582/ExtractingMPTweets.html) | `R Markdown` HTML page tutorial for collecting social media data related to Canadian MPs.
-`Twitter handles` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
+`Twitter Handles List` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
+`Extract MP Tweets` | [Rmd](https://github.com/AliceTimken/canadian-legislators/blob/b6afbda0218b3a735567d74e47c20dfe87807582/ExtractingMPTweets.html) | `R Markdown` HTML page tutorial for collecting social media data related to Canadian MPs.
+`Execute Text Analysis` | [Rmd](https://github.com/AliceTimken/canadian-legislators/blob/f8a36b1a33ae3064d3265b030a8bc7bb59d144ea/Canada_tw.Rmd) | `R Markdown` tutorial for text analyses of Canadian MP tweets (using French and English stopwords).
 
 The data formats are documented below.
 
@@ -26,11 +27,13 @@ Data Format Documentation
 
 ### Legislators file structure overview
 
-`canadian_mp_twitterhandles.csv` contains general information on Canadian Members of Parliament in the 44th House of Commons (elected in 2021).
+`canadian_mp_twitterhandles.csv` contains the name, party, and Twitter handles of Canadian Members of Parliament in the 44th House of Commons (elected in 2021).
 
-`Extracting MP Tweets` is an R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). This file is opened using your web browser.
+`ExtractingMPTweets.html` is an HTML R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). This file is opened using your web browser.
 
 (Note: The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.)
+
+`Canada_tw.Rmd` is an R Markdown file that performs text analyses of MP tweets with French and English stopwords using the [tidytext package](https://cran.r-project.org/web/packages/tidytext/index.html) and [SnowballC package](https://cran.r-project.org/web/packages/SnowballC/index.html).
 
 
 ### Data Dictionary (CSV)
