@@ -34,7 +34,7 @@ Data Format Documentation
 `uk_legislators_full.RData` is an R Data file that includes User IDs for MP Twitter accounts. These IDs are permanent, unlike screen names (or handles) that can be changed by individual users.
 
 
-### Data Dictionary (CSV)
+### Data Dictionary (Twitter handles only, CSV)
 
 The following fields are available in `uk_legislators.csv`:
 
@@ -50,9 +50,9 @@ The following fields are available in `uk_legislators.csv`:
 
 
 
-### Data Dictionary (Twitter User Data)
+### Data Dictionary (Twitter user data, RData)
 
-The following fields are available in `uk_legislators_full.RData` and were collected using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) in July of 2022:
+All fields included in the CSV file are available in the `uk_legislators_full.RData` file. The following additional fields are also available in the RData file and were collected using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (July 2022):
 
 * user_id: The integer representation of the unique identifier for the user               
 * name: The name of the user (as the user defined it)
