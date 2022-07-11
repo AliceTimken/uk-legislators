@@ -43,16 +43,16 @@ The following fields are available in `uk_legislators.csv`:
 * screen_name: Twitter handle of the legislator
 * constituency: Constituency represented by the legislator in parliament
 * party_member: Political party affiliation of the legislator 
-* party_before: The part affiliation of constituency's MP directly before to the 2019 election.
-* notes: Incumbency status of the MP and if/when they gained or left office during the 2019-2022 term.
-* user_id: The permanent Twitter User ID for the MP's account, when matched with the 2017 Twitter list.
+* party_before: The party affiliation of constituency's MP directly before to the 2019 election
+* notes: Incumbency status of the MP and if/when they gained or left office during the 2019-2022 term
+* user_id: The permanent Twitter User ID for the MP's account, when matched with the 2017 Twitter list
 
 
 
 
 ### Data Dictionary (Twitter User Data)
 
-The following fields are made available when collecting social media data using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) (as shown in `R Markdown file`):
+The following fields are made available when collecting social media data using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0):
 
 * user_id: The integer representation of the unique identifier for the user               
 * name: The name of the user (as the user defined it)
@@ -85,7 +85,7 @@ The list of MPs included in this dataset were partly webscraped from the "List o
 
 ### Legislator Twitter Accounts
 
-An list of UK MP accounts from the previous House of Commons (elected 2017) can be found on Twitter [here](https://twitter.com/i/lists/217199644). (Note: this list does not contain all current UK MP Twitter accounts.)
+A list of UK MP accounts from the previous House of Commons (elected 2017) curated by [@TwitterGov](https://twitter.com/TwitterGov/lists) can be found on Twitter [here](https://twitter.com/i/lists/217199644). (Note: this list does not contain all current UK MP Twitter accounts.)
 
 Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
