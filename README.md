@@ -17,7 +17,7 @@ File | Download | Description
 
 The data formats are documented below.
 
-This database is part of a "legislators twitter" working project, which is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
+This database is part of a "legislator twitter" working project, which is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
 
 
 
