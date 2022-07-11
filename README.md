@@ -11,13 +11,13 @@ This project provides the following files:
 
 File | Download | Description
 ---- | -------- | -----------
-`Twitter Handles List` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Data frame` of currently serving Members of the House of Commons and their social media accounts.
-`Collecting MP Accounts` | [R file](https://github.com/AliceTimken/canadian-legislators/blob/b6afbda0218b3a735567d74e47c20dfe87807582/ExtractingMPTweets.html) | `R code` file for collecting social media account information of UK MPs.
-`Full Data (User IDs)` | [RData](https://github.com/AliceTimken/canadian-legislators/blob/f8a36b1a33ae3064d3265b030a8bc7bb59d144ea/Canada_tw.Rmd) | `R Data` of currently serving Members of the House of Commons and their social media accounts including User IDs.
+`Twitter Handles List` | [CSV](https://github.com/AliceTimken/uk-legislators/blob/a1627845b0dfd931b85912841094a9c26d2b36c3/uk_legislators.csv) | `Data frame` of currently serving Members of the House of Commons and their social media accounts.
+`Collect MP Accounts Info` | [R file](https://github.com/AliceTimken/uk-legislators/blob/a1627845b0dfd931b85912841094a9c26d2b36c3/uk_legislators.R) | `R code` file for collecting social media account information of UK MPs.
+`Full Legislator Data` | [RData](https://github.com/AliceTimken/uk-legislators/blob/a1627845b0dfd931b85912841094a9c26d2b36c3/uk_legislators_full.RData) | `R Data` of currently serving Members of the House of Commons and their social media accounts, including User IDs.
 
 The data formats are documented below.
 
-This database is part of the legislators twitter project, which is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
+This database is part of the "legislators twitter" working project, which is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
 
 
 
@@ -29,9 +29,7 @@ Data Format Documentation
 
 `uk_legislators.csv` contains the name, party, incumbency status, and Twitter screen names (or handles) of Members of Parliament of the UK House of Commons elected in 2019 (2019-2022).
 
-`uk_legislators.R` is an R code file that was used to create the list of UK MP Twitter accounts by pulling a list of MPs elected in 2019 from Wikipedia and matching it with the most recent Twitter list of UK MP accounts available (provided by @TwitterGov). This file also includes mnotes on issues experienced when handcoding the remaining MPs.
-
-(Note: The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.)
+`uk_legislators.R` is an R code file that was used to create the list of UK MP Twitter accounts by pulling a list of MPs elected in 2019 from Wikipedia and matching it with the most recent Twitter list of UK MP accounts available (provided by @TwitterGov). This file also includes notes on issues experienced when handcoding the remaining MPs.
 
 `uk_legislators_full.RData` is an R Data file that includes User IDs for MP Twitter accounts. These IDs are permanent, unlike screen names (or handles) that can be changed by individual users.
 
@@ -87,7 +85,7 @@ The list of MPs included in this dataset were partly webscraped from the "List o
 
 ### Legislator Twitter Accounts
 
-An outdated list of UK MP accounts from the 2017 election can be found on Twitter [here](https://twitter.com/i/lists/217199644). (Note: this list does not contain all current UK MP Twitter accounts.)
+An list of UK MP accounts from the previous House of Commons (elected 2017) can be found on Twitter [here](https://twitter.com/i/lists/217199644). (Note: this list does not contain all current UK MP Twitter accounts.)
 
 Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
