@@ -52,7 +52,7 @@ The following fields are available in `uk_legislators.csv`:
 
 ### Data Dictionary (Twitter User Data)
 
-The following fields are made available when collecting social media data using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0):
+The following fields are available in `uk_legislators_full.RData` and were collected using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) in July of 2022:
 
 * user_id: The integer representation of the unique identifier for the user               
 * name: The name of the user (as the user defined it)
