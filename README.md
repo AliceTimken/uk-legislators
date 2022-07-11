@@ -1,5 +1,5 @@
-# canadian-legislators
-Members of the Canadian House of Commons.
+# uk-legislators
+Members of the House of Commons of the United Kingdom.
 
 
 
@@ -11,13 +11,13 @@ This project provides the following files:
 
 File | Download | Description
 ---- | -------- | -----------
-`Twitter Handles List` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Dataset` of currently serving Members of the House of Commons and their social media accounts.
-`Extract MP Tweets` | [Rmd](https://github.com/AliceTimken/canadian-legislators/blob/b6afbda0218b3a735567d74e47c20dfe87807582/ExtractingMPTweets.html) | `R Markdown` HTML page tutorial for collecting social media data related to Canadian MPs.
-`Execute Text Analysis` | [Rmd](https://github.com/AliceTimken/canadian-legislators/blob/f8a36b1a33ae3064d3265b030a8bc7bb59d144ea/Canada_tw.Rmd) | `R Markdown` tutorial for text analyses of Canadian MP tweets (using French and English stopwords).
+`Twitter Handles List` | [CSV](https://github.com/AliceTimken/canadian-legislators/blob/5aceeeab5d3b9c71904b5a8af4189cb20137d906/canadian_mp_twitterhandles.csv) | `Data frame` of currently serving Members of the House of Commons and their social media accounts.
+`Collecting MP Accounts` | [R file](https://github.com/AliceTimken/canadian-legislators/blob/b6afbda0218b3a735567d74e47c20dfe87807582/ExtractingMPTweets.html) | `R code` file for collecting social media account information of UK MPs.
+`Full Data (User IDs)` | [RData](https://github.com/AliceTimken/canadian-legislators/blob/f8a36b1a33ae3064d3265b030a8bc7bb59d144ea/Canada_tw.Rmd) | `R Data` of currently serving Members of the House of Commons and their social media accounts including User IDs.
 
 The data formats are documented below.
 
-This database is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
+This database is part of the legislators twitter project, which is maintained through manual edits by Sung Eun Choi (Rutgers University), Sam Koprowski (Rutgers University), Dhia Hammami (Syracuse University), and Alice Timken (Syracuse University).
 
 
 
@@ -27,30 +27,28 @@ Data Format Documentation
 
 ### Legislators file structure overview
 
-`canadian_mp_twitterhandles.csv` contains the name, party, and Twitter handles of Canadian Members of Parliament in the 44th House of Commons (elected in 2021).
+`uk_legislators.csv` contains the name, party, incumbency status, and Twitter screen names (or handles) of Members of Parliament of the UK House of Commons elected in 2019 (2019-2022).
 
-`ExtractingMPTweets.html` is an HTML R Markdown file that pulls inidividual user information and individual tweets from Twitter using the [rtweet package](https://www.rdocumentation.org/packages/rtweet/versions/0.7.0) as well as Twitter's Academic API and the [academictwitteR package](https://www.rdocumentation.org/packages/academictwitteR/versions/0.3.1). This file is opened using your web browser.
+`uk_legislators.R` is an R code file that was used to create the list of UK MP Twitter accounts by pulling a list of MPs elected in 2019 from Wikipedia and matching it with the most recent Twitter list of UK MP accounts available (provided by @TwitterGov). This file also includes mnotes on issues experienced when handcoding the remaining MPs.
 
 (Note: The rtweet library can be used by Twitter users without approval, while Academic Twitter requires approval from Twitter.)
 
-`Canada_tw.Rmd` is an R Markdown file that performs text analyses of MP tweets with French and English stopwords using the [tidytext package](https://cran.r-project.org/web/packages/tidytext/index.html) and [SnowballC package](https://cran.r-project.org/web/packages/SnowballC/index.html).
+`uk_legislators_full.RData` is an R Data file that includes User IDs for MP Twitter accounts. These IDs are permanent, unlike screen names (or handles) that can be changed by individual users.
 
 
 ### Data Dictionary (CSV)
 
-The following fields are available in `canadian_mp_twitterhandles.csv`:
+The following fields are available in `uk_legislators.csv`:
 
 
 * name: full name (first and last) of the legislator
 * screen_name: Twitter handle of the legislator
 * constituency: Constituency represented by the legislator in parliament
-* prov_territory: Province or territory of the legislator's constituency
-* political_affiliation: Political party affiliation of the legislator 
-* start_date: Start date of the legislator’s term in the 44th House of Commons (September 20, 2021)
-* first_name: First name of the legislator
-* last_name: Last name (surname) of the legislator
-* house: House of parliament to which the legislator belongs (e.g. House of Commons or Senate)
-* title: Honorary title of the legislator, if applicable
+* party_member: Political party affiliation of the legislator 
+* party_before: The part affiliation of constituency's MP directly before to the 2019 election.
+* notes: Incumbency status of the MP and if/when they gained or left office during the 2019-2022 term.
+* user_id: The permanent Twitter User ID for the MP's account, when matched with the 2017 Twitter list.
+
 
 
 
@@ -82,11 +80,14 @@ Data Sources
 
 ### Members of Parliament
 
-A list of current members of the Canadian House of Commons can be found [here](https://www.ourcommons.ca/members/en/search) and downloaded as CSV or XML.
+An interactive list of current members of the UK House of Commons can be found on the official website [here](https://members.parliament.uk/members/Commons). This website does not provide a list for accessible download.
+
+The list of MPs included in this dataset were partly webscraped from the "List of MPs elected in the 2019 United Kingdom general election" [Wikipedia page](https://en.wikipedia.org/wiki/List_of_MPs_elected_in_the_2019_United_Kingdom_general_election).
+
 
 ### Legislator Twitter Accounts
 
-A list of Canadian MP accounts curated by the House of Commons can be found on Twitter [here](https://twitter.com/i/lists/864088912087715840). (Note: this list may not contain all legislator Twitter accounts.)
+An outdated list of UK MP accounts from the 2017 election can be found on Twitter [here](https://twitter.com/i/lists/217199644). (Note: this list does not contain all current UK MP Twitter accounts.)
 
 Twitter accounts that could not be matched to a legislator computationally were handcoded based on information provided on legislators' official websites or via the Twitter search function.
 
@@ -99,4 +100,4 @@ This project is [dedicated to the public domain](LICENSE):
 > All contributions to this project will be released under the CC0 dedication. By submitting a pull request, you are agreeing to comply with this waiver of copyright interest.
 
 
-Last updated June 2022.
+Last updated July 2022.
