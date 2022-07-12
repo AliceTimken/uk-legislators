@@ -1,6 +1,7 @@
 # uk-legislators
 Members of the House of Commons of the United Kingdom.
 
+If you'd rather not deal with Rcode and you're only interested in UK MP Twitter data, you can also check out this (unaffiliated) data/visual resource on UK MP Twitter: [Politics Social](https://www.politics-social.com/).
 
 
 Overview
